@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Кошелек &#8470; {{ wallet_id }}</title>
+</head>
+<body>
+Твой кошелек &#8470; {{ wallet_id }}
+<br>
+Баланс {{ balance }}
+
+<form action='transaction/' method="POST">
+    {% csrf_token %}
+<input type="hidden" name="id" value={{wallet_id}}>
+<input type="submit" value="Перевод">
+</form>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<form action='delete/' method="POST">
+    {% csrf_token %}
+<input type="submit" value="Удалить кошелек">
+</form>
+
+</body>
+</html>

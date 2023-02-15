@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'phone_field',
     'bank.apps.BankConfig',
     'django.contrib.admin',
     'django.contrib.auth',

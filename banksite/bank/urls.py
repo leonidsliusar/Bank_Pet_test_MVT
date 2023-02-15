@@ -1,8 +1,16 @@
 from django.urls import path
-from bank.views import home
+
+from bank.services import *
+from bank.views import *
 
 
 
 urlpatterns = [
-    path('bank/', home)
+    path('bank/auth/', bank_auth, name='auth'),
+    path('bank/wallet/', wallet_view, name='wallet_view'),
+    path('bank/reg/', bank_reg),
+    path('bank/wallet/new/', new_wallet_generator),
+    path('bank/wallet/<wallet_id>/', detail_wallet, name='detail_wallet'),
+    path('bank/wallet/<wallet_id>/delete/', delete_wallet),
+    path('bank/wallet/<wallet_id>/transaction/', transaction),
 ]

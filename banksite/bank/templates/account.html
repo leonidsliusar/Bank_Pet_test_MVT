@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Личный кабинет</title>
+</head>
+<body>
+Привет {{ first_name }}!
+<br>
+Список кошельков:
+<ul>
+    {% for wallet in wallets %}
+        <li> &#8470; кошелька: {{ wallet.wallet_id }} Баланс: {{ wallet.balance }}&#8381; <a href="{{wallet.wallet_id}}">Действия с кошельком</a></li>
+    {% endfor %}
+
+</form>
+</ul>
+<form action='new/' method="POST">
+    {% csrf_token %}
+<input type="hidden" name="id" value={{id}}>
+<input type="submit" value="Добавить кошелек">
+</form>
+</body>
+</html>

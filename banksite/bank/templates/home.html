@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Авторизация</title>
+</head>
+<body>
+Введи данные учетной записи или зарегистрируйся
+<form method="POST">
+    {% csrf_token %}
+    <table>
+    {{ form }}
+    </table>
+    <input type="submit" value="Войти">
+</form>
+ <a href="reg/"><button>Регистрация</button></a>
+</body>
+</html>
