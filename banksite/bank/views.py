@@ -1,3 +1,4 @@
+from django.core import serializers
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -7,6 +8,7 @@ import rstr
 
 from bank.forms import Autorization, Registration
 from bank.models import *
+from bank.serializer import query_serializer
 
 
 def bank_auth(request):
@@ -46,11 +48,14 @@ def bank_reg(request):
 
 def wallet_view(request):
     login = request.session['context']['login']
-    user_data = Account.objects.filter(login=login).values()
+    user_data = Account.objects.filter(login=login).values('id', 'login', 'password', 'first_name', 'last_name', 'middle_name', 'email', 'phone', 'avatar')
     wallet_data = Account.objects.get(login=login).wallet_set.all().values('wallet_id', 'balance')
     context = {**user_data[0], **{'wallets': wallet_data}}
-    print(context)
+    serialize_wallet = query_serializer(wallet_data)
+    request.session['data'] = {**user_data[0], **serialize_wallet}
     return render(request, 'account.html', context)
+
+
 
 def detail_wallet(request, wallet_id):
     wallet_data = Wallet.objects.filter(wallet_id=wallet_id).values('wallet_id', 'balance')
@@ -58,3 +63,8 @@ def detail_wallet(request, wallet_id):
     return render(request, 'wallet.html', context)
 
 
+def transaction_view(request):
+    login = request.session['data']['login']
+    wallet_data = Account.objects.get(login=login).wallet_set.all().values('wallet_id', 'balance')
+    context = query_serializer(wallet_data)
+    return render(request, 'transaction.html', context)

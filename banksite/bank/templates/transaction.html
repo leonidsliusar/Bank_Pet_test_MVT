@@ -5,20 +5,27 @@
     <title>Личный кабинет</title>
 </head>
 <body>
-Привет {{ first_name }}!
-<br>
-Список кошельков:
-<ul>
-    {% for wallet in wallets %}
-        <li> &#8470; кошелька: {{ wallet.wallet_id }} Баланс: {{ wallet.balance }}&#8381; <a href="{{wallet.wallet_id}}">Действия с кошельком</a></li>
-    {% endfor %}
-
-</form>
-</ul>
-<form action='new/' method="POST">
+<form action="do/" method="POST">
     {% csrf_token %}
-<input type="hidden" name="id" value={{id}}>
-<input type="submit" value="Добавить кошелек">
+<label for="source">Выберите кошелек-донор:</label>
+<select name="source", id="source">
+    {% for wallet in wallet_data %}
+        <option value="{{wallet.wallet_id}}">{{ wallet.wallet_id }}  -- {{ wallet.balance }}&#8381;</option>
+    {% endfor %}
+</select>
+    <br>
+  <label>Куда перевести:</label>
+  <input type="text" id="recipient" name="recipient">
+    <br>
+  <label>Сколько перевести</label>
+  <input type="text" id="quantity" name="quantity">
+  <br>
+    <input type="submit" value="Перевод">
 </form>
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">{{ message }}</div>
+    {% endfor %}
+{% endif %}
 </body>
 </html>

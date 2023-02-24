@@ -20,5 +20,12 @@
 <input type="hidden" name="id" value={{id}}>
 <input type="submit" value="Добавить кошелек">
 </form>
+<br>
+<br>
+<form action='transaction/' method="POST">
+    {% csrf_token %}
+<input type="submit" value="Перевод">
+</form>
+
 </body>
 </html>
