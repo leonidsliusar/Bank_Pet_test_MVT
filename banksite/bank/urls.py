@@ -14,4 +14,5 @@ urlpatterns = [
     path('bank/wallet/new/', new_wallet_generator),
     path('bank/wallet/<wallet_id>/', detail_wallet, name='detail_wallet'),
     path('bank/wallet/<wallet_id>/delete/', delete_wallet),
+    path('bank/logout/', logout_view),
 ]

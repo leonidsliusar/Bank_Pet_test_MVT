@@ -1,70 +1,89 @@
-from django.core import serializers
+from django.contrib.auth import login, logout, REDIRECT_FIELD_NAME, authenticate
+from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.views.generic import DetailView
-from django.contrib import messages
-import rstr
-
 from bank.forms import Autorization, Registration
 from bank.models import *
-from bank.serializer import query_serializer
+from bank.serializer import query_serializer, query_serializer
+import logging
+from django.contrib import messages
+logger = logging.getLogger('main')
 
+"""request.method == 'POST':
+    username = request.POST.get('login')
+    password = request.POST.get('password')
+    find = User.objects.filter(username=username, password=password).values('username', 'password')
+    data = {'username': username, 'password': password}
+    user = User.objects.get(username=username)
+    if data in find:"""
 
 def bank_auth(request):
-    if request.method == 'POST':
-        login = request.POST.get('login')
-        password = request.POST.get('password')
-        find = Account.objects.filter(login=login, password=password).values('login', 'password')
-        data = {'login': login, 'password': password}
-        if data in find:
-            request.session['context'] = data
-            return redirect(reverse('wallet_view'))
-        else:
-            return HttpResponse('Пользователя с таким логином и паролем нет')
+    username = request.POST.get('login')
+    password = request.POST.get('password')
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        login(request, user)
+        #logger.debug(f'Успешная авторизация {username}')
+        return redirect(reverse('wallet_view'))
     else:
+        messages.debug(request, 'Пользователя с таким логином и паролем нет')
         auth_form = Autorization
         return render(request, 'home.html', {'form': auth_form})
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('auth')
 
 def bank_reg(request):
     reg_form = Registration(request.POST)
     if request.method == 'POST' and request.POST.get('password')==request.POST.get('password2') and reg_form.is_valid():
-        user = Account()
-        user.login = request.POST.get('login')
-        user.password = request.POST.get('password')
+        user = User()
+        account = Account()
+        user.username = request.POST.get('username')
+        user.set_password(request.POST.get('password'))
         user.first_name = request.POST.get('first_name')
         user.last_name = request.POST.get('last_name')
-        user.middle_name = request.POST.get('middle_name')
-        user.birth_date = request.POST.get('birth_date_year') + "-" + request.POST.get('birth_date_month') + "-" + request.POST.get('birth_date_day')
         user.email = request.POST.get('email')
-        user.avatar = request.POST.get('avatar')
-        user.phone = request.POST.get('phone')
+        account.middle_name = request.POST.get('middle_name')
+        account.birth_date = request.POST.get('birth_date_year') + "-" + request.POST.get('birth_date_month') + "-" + request.POST.get('birth_date_day')
+        account.avatar = request.POST.get('avatar')
+        account.phone = request.POST.get('phone')
         user.save()
-        return redirect('bank/')
+        account.user_id = user.id
+        account.save()
+        return redirect('../auth')
     else:
         reg_form = Registration
         return render(request, 'reg.html', {'form': reg_form})
 
-
+@login_required(login_url='../auth/')
 def wallet_view(request):
-    login = request.session['context']['login']
-    user_data = Account.objects.filter(login=login).values('id', 'login', 'password', 'first_name', 'last_name', 'middle_name', 'email', 'phone', 'avatar')
-    wallet_data = Account.objects.get(login=login).wallet_set.all().values('wallet_id', 'balance')
-    context = {**user_data[0], **{'wallets': wallet_data}}
-    serialize_wallet = query_serializer(wallet_data)
-    request.session['data'] = {**user_data[0], **serialize_wallet}
-    return render(request, 'account.html', context)
+    try:
+        username = request.user
+        user_data = User.objects.filter(username=username).values('id', 'username', 'first_name', 'last_name', 'email')
+        wallet_data = User.objects.get(username=username).wallet_set.all().values('wallet_id', 'balance')
+        context = {**user_data[0], **{'wallets': wallet_data}}
+        #serialize_wallet = query_serializer(wallet_data)
+        serialize_wallet = query_serializer(data=wallet_data)
+        request.session['data'] = {**user_data[0], **serialize_wallet}
+        return render(request, 'account.html', context)
+    except:
+        return redirect('../auth')
 
 
 
+@login_required(login_url='../auth/')
 def detail_wallet(request, wallet_id):
-    wallet_data = Wallet.objects.filter(wallet_id=wallet_id).values('wallet_id', 'balance')
+    id = request.user.id
+    wallet_data = User.objects.get(id=id).wallet_set.filter(wallet_id=wallet_id).values('wallet_id', 'balance')
     context = wallet_data[0]
     return render(request, 'wallet.html', context)
 
-
+@login_required(login_url='../../auth/')
 def transaction_view(request):
-    login = request.session['data']['login']
-    wallet_data = Account.objects.get(login=login).wallet_set.all().values('wallet_id', 'balance')
+    username = request.user
+    wallet_data = User.objects.get(username=username).wallet_set.all().values('wallet_id', 'balance')
     context = query_serializer(wallet_data)
     return render(request, 'transaction.html', context)

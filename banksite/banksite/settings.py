@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
+load_dotenv()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-=%q9i-7=y^(iujfvtr3=(v64_&#qf+qc-r&*q27mqjt!l8=^fw'
+SECRET_KEY = str(os.getenv('SECRET_KEY'))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -84,7 +88,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'db_bank',
         'USER': 'root',
-        'PASSWORD': '123456',
+        'PASSWORD': str(os.getenv('DB_PASSWORD')),
         'HOST': 'localhost',
         'PORT': '5432'}
     }
@@ -134,12 +138,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGGING = {
     'version': 1,
-    'filters': {
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        }
+    'formatters': {
+        'main_format': {'format': '{asctime} - {levelname} - {module} - {filename} - {message}', 'style': '{'},
     },
-    'handlers': {},
-    'loggers': {}
-    }
+    'handlers': {
+        'file': {'filename': 'mylog.log', 'class': 'logging.FileHandler', 'formatter': 'main_format'},
+    },
+    'loggers':
+        {'main': {'handlers': ['file'], 'level': 'DEBUG', 'propagate': 'True'},
+    },
+}
 

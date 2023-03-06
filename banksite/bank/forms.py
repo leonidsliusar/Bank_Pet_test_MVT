@@ -1,6 +1,7 @@
 from datetime import date
 
 from django import forms
+from django.contrib.auth.models import User
 from django.core import validators
 from phone_field import PhoneField
 
@@ -14,7 +15,7 @@ class Autorization(forms.ModelForm):
         model = Account
         fields = ['login', 'password']
 class Registration(forms.ModelForm):
-    login = forms.CharField(label='Логин',)
+    username = forms.CharField(label='Логин',)
     password = forms.CharField(label='Пароль', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Повторите пароль', widget=forms.PasswordInput)
     first_name = forms.CharField(label='Имя', max_length=55)
@@ -25,7 +26,7 @@ class Registration(forms.ModelForm):
     phone = forms.CharField(label='Телефон', validators=[validators.RegexValidator(regex='^\+?1?\d{9,15}$')])
     avatar = forms.ImageField(label='Фото', required=False)
     class Meta:
-        model = Account
+        model = User
         exclude = ['registation_date']
-        fields =['login', 'password', 'password2', 'email', 'phone']
+        fields =['username', 'password', 'password2', 'email', 'phone']
 
