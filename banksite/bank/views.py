@@ -65,7 +65,6 @@ def wallet_view(request):
         user_data = User.objects.filter(username=username).values('id', 'username', 'first_name', 'last_name', 'email')
         wallet_data = User.objects.get(username=username).wallet_set.all().values('wallet_id', 'balance')
         context = {**user_data[0], **{'wallets': wallet_data}}
-        #serialize_wallet = query_serializer(wallet_data)
         serialize_wallet = query_serializer(data=wallet_data)
         request.session['data'] = {**user_data[0], **serialize_wallet}
         return render(request, 'account.html', context)
