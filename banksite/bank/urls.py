@@ -10,7 +10,7 @@ urlpatterns = [
     path('bank/wallet/transaction/', transaction_view, name='transaction_view'),
     path('bank/wallet/transaction/do/', transaction),
     path('bank/wallet/', wallet_view, name='wallet_view'),
-    path('bank/reg/', bank_reg),
+    path('bank/reg/', bank_reg, name='reg'),
     path('bank/wallet/new/', new_wallet_generator),
     path('bank/wallet/<wallet_id>/', detail_wallet, name='detail_wallet'),
     path('bank/wallet/<wallet_id>/delete/', delete_wallet),

@@ -2,33 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Личный кабинет</title>
+    <title>Account</title>
 </head>
 <body>
-Привет {{ first_name }}!
+Hey {{ first_name }}!
   <form action="../logout">
-   <button>Выйти</button>
+   <button>Logout</button>
   </form>
 <br>
-Список кошельков:
+Wallets list:
 <ul>
     {% for wallet in wallets %}
-        <li> &#8470; кошелька: {{ wallet.wallet_id }} Баланс: {{ wallet.balance }}&#8381; <a href="{{wallet.wallet_id}}">Действия с кошельком</a></li>
+        <li> &#8470; wallet: {{ wallet.wallet_id }} Balance: {{ wallet.balance }}&#36;<a href="{{wallet.wallet_id}}">Operations</a></li>
     {% endfor %}
-
-</form>
 </ul>
 <form action='new/' method="POST">
     {% csrf_token %}
 <input type="hidden" name="id" value={{id}}>
-<input type="submit" value="Добавить кошелек">
+<input type="submit" value="Add wallet">
 </form>
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li>{% if message.tags %}{% endif %}{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
 <br>
 <br>
 <form action='transaction/' method="POST">
     {% csrf_token %}
-<input type="submit" value="Перевод">
+<input type="submit" value="Transaction">
 </form>
-
 </body>
 </html>

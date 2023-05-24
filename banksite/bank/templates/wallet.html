@@ -2,23 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Кошелек &#8470; {{ wallet_id }}</title>
+    <title>Wallet &#8470; {{ wallet_id }}</title>
 </head>
 <body>
-Твой кошелек &#8470; {{ wallet_id }}
+Your wallet &#8470; {{ wallet_id }}
 <br>
-Баланс {{ balance }}
+Balance {{ balance }}
 
 
 <form action='delete/' method="POST">
     {% csrf_token %}
 <input type="hidden" name="id" value={{wallet_id}}>
-<input type="submit" value="Удалить кошелек">
+<input type="submit" value="Delete wallet">
 </form>
 {% if messages %}
     {% for message in messages %}
         <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">{{ message }}</div>
     {% endfor %}
 {% endif %}
+<br>
+<br>
+<a href="../"><button>My account</button></a>
 </body>
 </html>

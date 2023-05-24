@@ -2,30 +2,33 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Личный кабинет</title>
+    <title>Transactions</title>
 </head>
 <body>
 <form action="do/" method="POST">
     {% csrf_token %}
-<label for="source">Выберите кошелек-донор:</label>
+<label for="source">Choose source:</label>
 <select name="source", id="source">
     {% for wallet in wallet_data %}
-        <option value="{{wallet.wallet_id}}">{{ wallet.wallet_id }}  -- {{ wallet.balance }}&#8381;</option>
+        <option value="{{wallet.wallet_id}}">{{ wallet.wallet_id }}  -- {{ wallet.balance }}&#36;</option>
     {% endfor %}
 </select>
     <br>
-  <label>Куда перевести:</label>
+  <label>Write target:</label>
   <input type="text" id="recipient" name="recipient">
     <br>
-  <label>Сколько перевести</label>
+  <label>Amount</label>
   <input type="text" id="quantity" name="quantity">
   <br>
-    <input type="submit" value="Перевод">
+    <input type="submit" value="Confirm">
 </form>
 {% if messages %}
     {% for message in messages %}
         <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">{{ message }}</div>
     {% endfor %}
 {% endif %}
+<br>
+<br>
+<a href="../"><button>My account</button></a>
 </body>
 </html>

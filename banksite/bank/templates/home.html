@@ -2,17 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Авторизация</title>
+    <title>Authorization</title>
 </head>
 <body>
-Введи данные учетной записи или зарегистрируйся
+Login or register
 <form method="POST">
     {% csrf_token %}
     <table>
     {{ form }}
     </table>
-    <input type="submit" value="Войти">
+    <input type="submit" value="Log in">
 </form>
- <a href="../reg"><button>Регистрация</button></a>
+ <a href="../reg"><button>Registration</button></a>
 </body>
 </html>
