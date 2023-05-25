@@ -147,4 +147,3 @@ LOGGING = {
         {'main': {'handlers': ['file'], 'level': 'DEBUG', 'propagate': 'True'},
     },
 }
-

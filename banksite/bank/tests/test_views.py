@@ -4,6 +4,10 @@ from django.template.loader import render_to_string
 from django.test import Client
 from django.urls import reverse
 
+from bank import services, views
+from bank.models import Wallet
+from bank.views import delete_wallet, new_wallet_generator, transaction
+
 
 @pytest.mark.django_db
 @pytest.mark.parametrize('login, password', [('test', 'test_pass')])
@@ -88,3 +92,46 @@ def test_transaction_view(create_test_user, auth_and_login_user, add_wallet):
         'transaction.html', context={'csrf_token': csrf_token, 'wallet_data': wallets, 'user_id': data['id']})
     result = response.content.decode()
     assert result == expected_result
+
+
+@pytest.mark.django_db(transaction=True)
+def test_delete_wallet(create_test_user, auth_and_login_user, add_wallet, wallet_id=1):
+    client = create_test_user
+    wrapper_fixt = auth_and_login_user
+    user_data = wrapper_fixt(client)
+    wrapper_fixt_wall = add_wallet
+    wrapper_fixt_wall(user_data, wallet_id)
+    assert Wallet.objects.all().exists() == True
+    endpoint = reverse(delete_wallet, args=[wallet_id])
+    response = client.post(endpoint)
+    assert response.status_code == 302
+    assert response.url == reverse('wallet_view')
+    assert Wallet.objects.all().exists() == False
+
+
+def stub_create_wallet(user_id=None):
+    pass
+
+
+@pytest.mark.django_db(transaction=True)
+def test_new_wallet_generator(monkeypatch, create_test_user, auth_and_login_user):
+    monkeypatch.setattr(views, 'create_wallet', stub_create_wallet)
+    client = create_test_user
+    wrapper_fixt = auth_and_login_user
+    wrapper_fixt(client)
+    response = client.post(reverse(new_wallet_generator))
+    assert response.status_code == 302
+
+
+def stub_make_transaction(request, source, recipient, quantity):
+    pass
+
+
+@pytest.mark.django_db(transaction=True)
+def test_transaction(monkeypatch, create_test_user, auth_and_login_user):
+    monkeypatch.setattr(views, 'make_transaction', stub_make_transaction)
+    client = create_test_user
+    wrapper_fixt = auth_and_login_user
+    wrapper_fixt(client)
+    response = client.post(reverse(transaction))
+    assert response.status_code == 302

@@ -53,14 +53,3 @@ def add_wallet():
     return wrapper
 
 
-async def transaction_run(endpoint, data):
-    endpoint = 'http://localhost/' + endpoint
-    print(endpoint)
-
-
-
-@pytest.fixture
-async def concurrent_transactions_run(endpoint, data):
-    transaction_1 = asyncio.create_task(transaction_run(endpoint, data))
-    transaction_2 = asyncio.create_task(transaction_run(endpoint, data))
-    await asyncio.gather(transaction_1, transaction_2)

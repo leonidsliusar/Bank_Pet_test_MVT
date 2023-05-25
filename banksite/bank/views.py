@@ -7,6 +7,7 @@ from bank.forms import Autorization, Registration
 from bank.models import *
 import logging
 from django.contrib import messages
+from bank.services import create_wallet, make_transaction
 
 logger = logging.getLogger('main')
 
@@ -88,3 +89,29 @@ def transaction_view(request):
     wallet_data = Wallet.objects.filter(user=user_id).values('wallet_id', 'balance')
     context = {'wallet_data': wallet_data}
     return render(request, 'transaction.html', context)
+
+
+@login_required(login_url='../../auth/')
+def new_wallet_generator(request):
+    user_id = request.POST.get('id')
+    create_wallet(user_id)
+    return redirect('wallet_view')
+
+
+@login_required(login_url='../../auth/')
+def delete_wallet(request, wallet_id):
+    wallet = Wallet.objects.get(wallet_id=wallet_id)
+    if wallet.balance != 0:
+        messages.add_message(request, messages.ERROR, 'The wallet isn\'t empty')
+        return redirect('detail_wallet', wallet_id=wallet_id)
+    wallet.delete()
+    return redirect('wallet_view')
+
+
+@login_required(login_url='../../auth/')
+def transaction(request):
+    source = request.POST.get('source')
+    recipient = request.POST.get('recipient')
+    quantity = request.POST.get('quantity')
+    message = make_transaction(request, source, recipient, quantity)
+    return redirect('transaction_view')
