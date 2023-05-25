@@ -8,7 +8,7 @@ from bank.views import *
 urlpatterns = [
     path('bank/auth/', bank_auth, name='auth'),
     path('bank/wallet/transaction/', transaction_view, name='transaction_view'),
-    path('bank/wallet/transaction/do/', transaction),
+    path('bank/wallet/transaction/do/', transaction, name='do_transaction'),
     path('bank/wallet/', wallet_view, name='wallet_view'),
     path('bank/reg/', bank_reg, name='reg'),
     path('bank/wallet/new/', new_wallet_generator),

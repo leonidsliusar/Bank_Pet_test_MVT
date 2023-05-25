@@ -1,6 +1,9 @@
+import asyncio
+
+import aiohttp
 import pytest
 from django.contrib.auth import authenticate
-from django.test import Client
+from django.test import Client, AsyncClient
 from django.contrib.auth.models import User
 
 from bank.models import Wallet
@@ -35,14 +38,29 @@ def auth_and_login_user():
         user = authenticate(username=data['username'], password=data['password'])
         client.force_login(user)
         return data
+
     return wrapper
 
 
 @pytest.fixture
 def add_wallet():
-    def wrapper(data):
-        wallet = Wallet.objects.create(user_id=data['id'], wallet_id=1)
+    def wrapper(data, wallet_id=1):
+        wallet = Wallet.objects.create(user_id=data['id'], wallet_id=wallet_id)
         wallet.save()
         wallet_data = {'balance': format(wallet.balance, '.2f'), 'wallet_id': wallet.wallet_id}
         return wallet_data
+
     return wrapper
+
+
+async def transaction_run(endpoint, data):
+    endpoint = 'http://localhost/' + endpoint
+    print(endpoint)
+
+
+
+@pytest.fixture
+async def concurrent_transactions_run(endpoint, data):
+    transaction_1 = asyncio.create_task(transaction_run(endpoint, data))
+    transaction_2 = asyncio.create_task(transaction_run(endpoint, data))
+    await asyncio.gather(transaction_1, transaction_2)

@@ -3,7 +3,7 @@ import rstr
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import transaction
+from django.db import transaction, IntegrityError
 from django.shortcuts import redirect
 from bank.models import Wallet
 
@@ -13,7 +13,7 @@ def new_wallet_generator(request):
     new_wallet = Wallet(user_id=request.POST.get('id'), wallet_id=rstr.xeger(r'[A-Z]{3}[-]\d{3}[-]\d{4}'))
     try:
         new_wallet.save()
-    except AttributeError or TypeError:
+    except IntegrityError:
         new_wallet_generator()
     finally:
         return redirect('wallet_view')
@@ -29,7 +29,7 @@ def delete_wallet(request, wallet_id):
     return redirect('wallet_view')
 
 
-@login_required(login_url='../../auth/')
+#@login_required(login_url='../../auth/')
 @transaction.atomic
 def transaction(request):
     source = request.POST.get('source')
