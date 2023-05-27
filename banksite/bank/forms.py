@@ -25,7 +25,6 @@ class Registration(forms.ModelForm):
                                  widget=forms.widgets.SelectDateWidget(years=range(date.today().year, 1900, -1)))
     email = forms.EmailField(label='e-mail')
     phone = forms.CharField(label='phone', validators=[validators.RegexValidator(regex='^\+?1?\d{9,15}$')])
-    avatar = forms.ImageField(label='photo', required=False)
 
     class Meta:
         model = User
