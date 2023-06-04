@@ -15,4 +15,4 @@ class Account(models.Model):
 class Wallet(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="wallet", default='0')
     balance = models.DecimalField(verbose_name="balance", max_digits=20, decimal_places=2, default=0)
-    wallet_id = models.CharField(max_length=12, default=None, unique=True, blank=True)
+    wallet_id = models.CharField(max_length=12, default=None, primary_key=True, blank=True)

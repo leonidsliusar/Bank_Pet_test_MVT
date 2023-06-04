@@ -13,15 +13,20 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path
-
-
 from django.urls import include
-
+from api.views import ListWalletView, DetailWalletView, TransactionView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('bank.urls')),
     path('__debug__/', include('debug_toolbar.urls')),
+    path('api/auth', include('rest_framework.urls')),
+    path('api/v1/<int:user_id>/wallets', ListWalletView.as_view()),
+    path('api/v1/<int:user_id>/wallets/<str:wallet_id>', DetailWalletView.as_view()),
+    path('api/v1/<int:user_id>/transaction', TransactionView.as_view()),
+    path('api/', include('djoser.urls')),
+    path('api/', include('djoser.urls.jwt')),
 ]
