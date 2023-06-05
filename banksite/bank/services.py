@@ -17,24 +17,25 @@ def create_wallet(user_id):
 
 @transaction.atomic
 def make_transaction(request, source, recipient, quantity):
+    s = None
     try:
         s = Wallet.objects.select_for_update().get(wallet_id=source)
         r = Wallet.objects.select_for_update().get(wallet_id=recipient)
     except ObjectDoesNotExist:
         if s:
-            message = 'Target wallet doesn\'t exists'
+            message = f'Target {recipient} wallet doesn\'t exists'
         else:
-            message = 'Source wallet doesn\'t exists'
+            message = f'Source {source} wallet doesn\'t exists'
         messages.add_message(request, messages.ERROR, message)
         return message
     if s.balance - Decimal(quantity) < 0:
         message = 'Not enough money on source wallet'
         messages.add_message(request, messages.ERROR, message)
     elif source == recipient:
-        message = 'Source wallet equal to target wallet'
+        message = f'Source {source} wallet equal to target {recipient} wallet'
         messages.add_message(request, messages.ERROR, message)
     elif Decimal(quantity) <= 0:
-        message = 'Invalid amount'
+        message = f'Invalid amount {quantity}'
         messages.add_message(request, messages.ERROR, message)
     else:
         s.balance -= Decimal(quantity)

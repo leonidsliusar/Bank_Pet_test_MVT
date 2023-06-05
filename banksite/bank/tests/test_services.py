@@ -44,9 +44,9 @@ def test_make_transaction(create_test_user, auth_and_login_user, add_wallet,
     if amount > source_start_bal or amount <= 0:
         assert source_balance == source_start_bal and target_balance == 0
         if amount > source_start_bal:
-            expected_message = 'Not enough money on source wallet'
+            expected_message = f'Not enough money on source wallet'
         else:
-            expected_message = 'Invalid amount'
+            expected_message = f'Invalid amount {amount}'
     else:
         assert source_balance == source_start_bal - amount and target_balance == amount
         expected_message = 'Transaction successful'
@@ -80,7 +80,7 @@ def test_transaction_target_equal_source(create_test_user, auth_and_login_user, 
     source_balance = Wallet.objects.get(wallet_id=source_id).balance
     target_balance = Wallet.objects.get(wallet_id=target_id).balance
     assert source_balance == source_start_bal and target_balance == 0
-    assert message == 'Source wallet equal to target wallet'
+    assert message == f'Source {source_id} wallet equal to target {source_id} wallet'
 
 
 @pytest.mark.django_db(transaction=True)
@@ -108,4 +108,4 @@ def test_transaction_wallet_doesnt_exists(create_test_user, auth_and_login_user,
     message = [str(message) for message in storage][0]
     source_balance = Wallet.objects.get(wallet_id=source_id).balance
     assert source_balance == source_start_bal
-    assert message == 'Target wallet doesn\'t exists'
+    assert message == f'Target {source_id+target_id} wallet doesn\'t exists'

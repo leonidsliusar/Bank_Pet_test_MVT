@@ -80,6 +80,8 @@ TEMPLATES = [
     },
 ]
 
+FORM_RENDERER = "django.forms.renderers.DjangoDivFormRenderer"
+
 WSGI_APPLICATION = 'banksite.wsgi.application'
 
 

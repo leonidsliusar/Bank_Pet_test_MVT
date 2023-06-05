@@ -13,7 +13,7 @@ class ListWalletView(APIView):
     def get(self, request, user_id: int):  # get all wallets
         query = Wallet.objects.filter(user_id=user_id).select_related('user').only(
             'balance', 'wallet_id', 'user__first_name')
-        response = Response({'error': f'User with id {user_id} doesn\'t exists'}, status=404)
+        response = Response({'error': f'User with id {user_id} haven\'t wallets'}, status=404)
         if query:
             wallets_data = WalletSerializer(query, many=True).data
             user_first_name = query[0].user.first_name
@@ -58,7 +58,7 @@ class TransactionView(APIView):
     def post(self, request, user_id: int):  # make transaction
         serializer = TransactionDataSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        message = make_transaction(request, **request.data)
+        message = make_transaction(request, **serializer.data)
         match message:
             case 'Transaction successful':
                 code = 200
