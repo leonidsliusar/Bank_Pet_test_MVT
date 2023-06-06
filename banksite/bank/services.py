@@ -17,6 +17,10 @@ def create_wallet(user_id):
 
 @transaction.atomic
 def make_transaction(request, source, recipient, quantity):
+    if not source or not recipient or not quantity:
+        message = 'You have to fill all fields'
+        messages.add_message(request, messages.SUCCESS, message)
+        return message
     s = None
     try:
         s = Wallet.objects.select_for_update().get(wallet_id=source)

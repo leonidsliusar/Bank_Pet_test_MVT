@@ -1,0 +1,31 @@
+version: '3.8'
+
+volumes:
+  postgres_volume:
+
+services:
+  django:
+    build: .
+    container_name: bank_app
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    ports:
+      - 8000:8000
+    environment:
+      - DEBUG=1
+
+  postgres:
+    image: postgres:15.3-alpine
+    container_name: postgres_server
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data
+    restart: always
+    expose:
+      - ${DB_PORT}
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}

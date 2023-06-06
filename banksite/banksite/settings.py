@@ -29,7 +29,7 @@ SECRET_KEY = str(os.getenv('SECRET_KEY'))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1"]
+ALLOWED_HOSTS = ("127.0.0.1", )
 
 INTERNAL_IPS = [
     "127.0.0.1",
@@ -91,11 +91,11 @@ WSGI_APPLICATION = 'banksite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'db_bank',
+        'NAME': os.getenv('DB_NAME'),
         'USER': os.getenv('DB_USER'),
         'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': 'localhost',
-        'PORT': '5432'}
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT')}
     }
 
 
