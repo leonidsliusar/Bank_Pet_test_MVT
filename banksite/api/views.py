@@ -2,13 +2,15 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from api.permissions import IsWalletOwner
 from api.serializer import WalletSerializer, TransactionDataSerializer
 from bank.models import Wallet
 from bank.services import create_wallet, make_transaction
 
 
 class ListWalletView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsWalletOwner]
 
     def get(self, request, user_id: int):  # get all wallets
         query = Wallet.objects.filter(user_id=user_id).select_related('user').only(
@@ -27,7 +29,7 @@ class ListWalletView(APIView):
 
 
 class DetailWalletView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsWalletOwner]
 
     def get(self, request, user_id: int, wallet_id: str):  # get specific one wallet
         query = Wallet.objects.filter(pk=wallet_id, user_id=user_id).select_related('user').only(
@@ -53,7 +55,7 @@ class DetailWalletView(APIView):
 
 
 class TransactionView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsWalletOwner]
 
     def post(self, request, user_id: int):  # make transaction
         serializer = TransactionDataSerializer(data=request.data)
